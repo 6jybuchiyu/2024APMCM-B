@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 @Auth : Jybuchiyu
-@File : main.py.py
+@File : train_process.py.py
 @IDE ：PyCharm
 """
 import pandas as pd
