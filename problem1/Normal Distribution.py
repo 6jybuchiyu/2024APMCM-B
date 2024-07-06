@@ -2,7 +2,7 @@ import pandas as pd
 from scipy.stats import shapiro, pearsonr
 
 # 加载数据
-data = pd.read_csv('../train.csv')
+data = pd.read_csv('../processed_train_data.csv',encoding='GBK')
 
 # 检查每个变量是否符合正态分布
 normality_results = {}
