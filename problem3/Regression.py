@@ -393,7 +393,7 @@ def train_model(csv_path, method='Random_Forest', target_column=None, pretrained
 
 def predict(pred_csv_path=None, model=None):
     print('=' * 25 + "Energy Consumption Predict Start..." + '=' * 25)
-    X = pd.read_csv(pred_csv_path)
+    X = pd.read_csv(pred_csv_path,encoding='gbk')
     selected_columns = ["地形排水", "基础设施恶化", "季风强度", "淤积", "滑坡", "人口得分", "气候变化", "无效防灾",
                         "农业实践", "流域", "政策因素", "规划不足"]
     X = X[selected_columns]
@@ -403,7 +403,7 @@ def predict(pred_csv_path=None, model=None):
 
 if __name__ == '__main__':
     train_dataset_path = '../DATA_PROCESS/processed_train_data.csv'
-    model = train_model(train_dataset_path, method='Decision_Tree', target_column="洪水概率", pretrained=False)
+    model = train_model(train_dataset_path, method='SVR', target_column="洪水概率", pretrained=False)
 
     pred_path = '../DATA_PROCESS/processed_test_data.csv'
     pred_output = predict(pred_csv_path=pred_path, model=model)
