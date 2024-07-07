@@ -22,14 +22,16 @@ gd = GeoDetector(df, target_variable, independent_variables)
 # 因素探测
 factor_df = gd.factor_dector()
 sorted_columns = factor_df.loc['q statistic'].sort_values(ascending=False)
+# 输出数值表格
+print(sorted_columns)
 # 绘制柱状图
 plt.rcParams['font.sans-serif'] = ['SimHei']  # 设置字体为黑体
 plt.figure(figsize=(12, 8))
 sns.barplot(x=sorted_columns.index, y=sorted_columns.values, palette='viridis')
 plt.xticks(rotation=45, ha='right')  # 调整x轴标签的旋转角度和对齐方式
-plt.title('地理检测法因素探测结果')  # 添加图表标题
+plt.title('地理检测法因素探测分析')  # 添加图表标题
 plt.xlabel('自变量')  # 设置x轴标签
-plt.ylabel('Q统计量')  # 设置y轴标签
+plt.ylabel('q统计量')  # 设置y轴标签
 plt.ylim(0.03, 0.04)  # 设置y轴范围
 plt.tight_layout()  # 调整布局
 plt.show()
