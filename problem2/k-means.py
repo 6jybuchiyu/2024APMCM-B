@@ -1,9 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-@Auth : Jybuchiyu
-@File : k-means.py
-@IDE ：PyCharm
-"""
 import pandas as pd
 from sklearn.cluster import KMeans
 import seaborn as sns
@@ -82,4 +76,15 @@ if __name__ == '__main__':
     # 设置x轴标签为垂直显示
     ax.set_xticklabels(vertical_labels(ax.get_xticklabels()))
 
+    plt.show()
+
+    # 统计每个簇的数据点数量
+    cluster_counts = train['Cluster'].value_counts().sort_index()
+
+    # 可视化每个簇的数据点数量
+    plt.figure(figsize=(10, 6))
+    sns.barplot(x=cluster_counts.index, y=cluster_counts.values, palette='bright')
+    plt.xlabel('Cluster')
+    plt.ylabel('数量')
+    plt.title('不同簇的数据点数量')
     plt.show()
