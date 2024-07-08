@@ -17,9 +17,14 @@ print(f'Using device: {device}')
 
 # 读取数据
 train_data = pd.read_csv('../DATA_PROCESS/processed_train_data.csv')
-selected_columns = ["地形排水", "基础设施恶化", "季风强度", "淤积", "滑坡", "人口得分", "气候变化", "无效防灾",
-                    "农业实践", "流域", "政策因素", "规划不足", "洪水概率"]
+selected_columns = ["地形排水", "基础设施恶化", "季风强度", "淤积", "滑坡", "洪水概率"]
+# "人口得分", "气候变化", "无效防灾", "农业实践", "流域", "政策因素", "规划不足", "洪水概率"
+# selected_columns = ["季风强度", "地形排水", "河流管理", "森林砍伐", "城市化", "气候变化", "大坝质量", "淤积",
+#                     "农业实践", "侵蚀", "无效防灾",
+#                     "排水系统", "海岸脆弱性", "滑坡", "流域", "基础设施恶化", "人口得分", "湿地损失", "规划不足",
+#                     "政策因素", "洪水概率"]
 train_data = train_data[selected_columns]
+
 
 # 数据预处理
 def preprocess_data(data, target_column):
@@ -34,6 +39,7 @@ def preprocess_data(data, target_column):
 
     return input_data_scaled, output_data_scaled, scaler_input, scaler_output
 
+
 # 对训练数据进行预处理
 X, y, scaler_input, scaler_output = preprocess_data(train_data, '洪水概率')
 
@@ -44,6 +50,7 @@ X_train_tensor = torch.tensor(X_train, dtype=torch.float32).to(device)
 y_train_tensor = torch.tensor(y_train, dtype=torch.float32).to(device)
 X_val_tensor = torch.tensor(X_val, dtype=torch.float32).to(device)
 y_val_tensor = torch.tensor(y_val, dtype=torch.float32).to(device)
+
 
 # 定义MLP模型
 class MLP(nn.Module):
@@ -70,6 +77,7 @@ class MLP(nn.Module):
         x = self.fc8(x)
         return x
 
+
 input_size = X_train.shape[1]
 model = MLP(input_size).to(device)  # 移动模型到GPU
 
@@ -78,7 +86,7 @@ criterion = nn.MSELoss()
 optimizer = optim.Adam(model.parameters(), lr=0.001)
 
 # 训练模型
-num_epochs = 100
+num_epochs = 200
 train_losses = []
 val_losses = []
 val_mses = []
@@ -104,7 +112,8 @@ for epoch in range(num_epochs):
     val_mses.append(val_mse)
 
     if (epoch + 1) % 10 == 0:
-        print(f'Epoch [{epoch + 1}/{num_epochs}], Train Loss: {loss.item():.4f}, Validation Loss: {val_loss.item():.4f}, Validation MSE: {val_mse:.4f}')
+        print(
+            f'Epoch [{epoch + 1}/{num_epochs}], Train Loss: {loss.item():.4f}, Validation Loss: {val_loss.item():.4f}, Validation MSE: {val_mse:.4f}')
 
 # 绘制训练和验证损失曲线
 plt.figure(figsize=(10, 5))

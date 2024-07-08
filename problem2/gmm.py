@@ -22,6 +22,13 @@ if __name__ == '__main__':
     print("\nCluster Means:\n", cluster_means)
     print("\nCluster Risk Levels:\n", cluster_risk)
 
+    # 找到每个簇中洪水概率的最小值
+    cluster_min_flood_prob = train.groupby('Cluster')['洪水概率'].min()
+    print("\n每个簇中洪水概率的最小值:\n", cluster_min_flood_prob)
+    # 找到每个簇中洪水概率的最大值
+    cluster_max_flood_prob = train.groupby('Cluster')['洪水概率'].max()
+    print("\n每个簇中洪水概率的最大值:\n", cluster_max_flood_prob)
+
     # 在每个簇中随机抽取500个“洪水概率”点
     sample_data = train.groupby('Cluster').apply(lambda x: x.sample(min(len(x), 500), random_state=42)).reset_index(drop=True)
 

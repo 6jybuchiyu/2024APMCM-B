@@ -21,6 +21,7 @@ if __name__ == '__main__':
     labels = kmeans.labels_
     train['Cluster'] = labels
     cluster_means = train.groupby('Cluster').mean()
+    cluster_vars = train.groupby('Cluster').var()
 
     # 查看高、中、低风险类别的洪水概率均值
     cluster_risk = train.groupby('Cluster')['洪水概率'].mean()
@@ -70,6 +71,25 @@ if __name__ == '__main__':
     ax.set_xlabel('特征')
     ax.set_ylabel('均值')
     ax.set_title('不同簇的特征均值')
+    ax.legend()
+    ax.grid(True)
+
+    # 设置x轴标签为垂直显示
+    ax.set_xticklabels(vertical_labels(ax.get_xticklabels()))
+
+    plt.show()
+
+    # 可视化每个簇的特征方差（去掉id列）
+    cluster_vars = cluster_vars.drop(columns=['id'])
+    features = cluster_vars.columns
+
+    fig, ax = plt.subplots(figsize=(14, 8))
+    for cluster in cluster_vars.index:
+        ax.plot(features, cluster_vars.loc[cluster, :], marker='o', label=f'Cluster {cluster}')
+
+    ax.set_xlabel('特征')
+    ax.set_ylabel('方差')
+    ax.set_title('不同簇的特征方差')
     ax.legend()
     ax.grid(True)
 

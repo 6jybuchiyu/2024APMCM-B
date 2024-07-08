@@ -14,10 +14,8 @@ print(f'Using device: {device}')
 
 # 读取数据
 train_data = pd.read_csv('../DATA_PROCESS/processed_train_data.csv')
-selected_columns = ["地形排水", "基础设施恶化", "季风强度", "淤积", "滑坡", "人口得分", "气候变化", "无效防灾",
-                    "农业实践", "流域", "政策因素", "规划不足", "洪水概率"]
+selected_columns = ["地形排水", "基础设施恶化", "季风强度", "淤积", "滑坡", "人口得分", "气候变化", "洪水概率"]
 train_data = train_data[selected_columns]
-
 
 # 数据预处理
 def preprocess_data(data, target_column):
@@ -31,7 +29,6 @@ def preprocess_data(data, target_column):
     output_data_scaled = scaler_output.fit_transform(output_data.values.reshape(-1, 1))
 
     return input_data_scaled, output_data_scaled, scaler_input, scaler_output
-
 
 # 对训练数据进行预处理
 X, y, scaler_input, scaler_output = preprocess_data(train_data, '洪水概率')
@@ -53,35 +50,39 @@ train_loader = torch.utils.data.DataLoader(torch.utils.data.TensorDataset(X_trai
 val_loader = torch.utils.data.DataLoader(torch.utils.data.TensorDataset(X_val_tensor, y_val_tensor),
                                          batch_size=batch_size, shuffle=False)
 
-
 # 定义CNN模型
 class CNN(nn.Module):
     def __init__(self, input_size):
         super(CNN, self).__init__()
-        self.conv1 = nn.Conv1d(1, 32, kernel_size=3, padding=1)
+        self.conv1 = nn.Conv1d(1, 32, kernel_size=2, padding=0)
         self.pool = nn.MaxPool1d(2)
-        self.conv2 = nn.Conv1d(32, 64, kernel_size=3, padding=1)
-        self.conv3 = nn.Conv1d(64, 32, kernel_size=3, padding=1)
+        self.conv2 = nn.Conv1d(32, 64, kernel_size=2, padding=0)
 
         # 计算展平后的张量大小
-        self.flatten_input_size = input_size // 8 * 32
+        self.flatten_input_size = self._get_flatten_size(input_size)
 
         self.fc1 = nn.Linear(self.flatten_input_size, 32)
         self.fc2 = nn.Linear(32, 1)
         self.relu = nn.ReLU()
+
+    def _get_flatten_size(self, input_size):
+        with torch.no_grad():
+            x = torch.zeros(1, 1, input_size)
+            x = self.conv1(x)
+            x = self.pool(x)
+            x = self.conv2(x)
+            x = self.pool(x)
+            return x.numel()
 
     def forward(self, x):
         x = self.relu(self.conv1(x))
         x = self.pool(x)
         x = self.relu(self.conv2(x))
         x = self.pool(x)
-        x = self.relu(self.conv3(x))
-        x = self.pool(x)
         x = x.view(x.size(0), -1)
         x = self.relu(self.fc1(x))
         x = self.fc2(x)
         return x
-
 
 input_size = X_train.shape[1]
 model = CNN(input_size).to(device)  # 移动模型到GPU
@@ -130,6 +131,15 @@ plt.legend()
 plt.title('Training and Validation Loss')
 plt.xlabel('Epoch')
 plt.ylabel('Loss')
+plt.show()
+
+# 绘制单独的验证MSE曲线
+plt.figure()
+plt.plot(val_losses, label='Validation MSE')
+plt.legend()
+plt.title('Validation Mean Squared Error')
+plt.xlabel('Epoch')
+plt.ylabel('MSE')
 plt.show()
 
 # 模型验证

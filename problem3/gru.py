@@ -14,10 +14,8 @@ print(f'Using device: {device}')
 
 # 读取数据
 train_data = pd.read_csv('../DATA_PROCESS/processed_train_data.csv')
-selected_columns = ["地形排水", "基础设施恶化", "季风强度", "淤积", "滑坡", "人口得分", "气候变化", "无效防灾",
-                    "农业实践", "流域", "政策因素", "规划不足", "洪水概率"]
+selected_columns = ["地形排水", "基础设施恶化", "季风强度", "淤积", "滑坡", "人口得分", "气候变化", "洪水概率"]
 train_data = train_data[selected_columns]
-
 
 # 数据预处理
 def preprocess_data(data, target_column):
@@ -32,7 +30,6 @@ def preprocess_data(data, target_column):
 
     return input_data_scaled, output_data_scaled, scaler_input, scaler_output
 
-
 # 对训练数据进行预处理
 X, y, scaler_input, scaler_output = preprocess_data(train_data, '洪水概率')
 
@@ -43,7 +40,6 @@ X_train_tensor = torch.tensor(X_train, dtype=torch.float32).to(device).unsqueeze
 y_train_tensor = torch.tensor(y_train, dtype=torch.float32).to(device)
 X_val_tensor = torch.tensor(X_val, dtype=torch.float32).to(device).unsqueeze(1)
 y_val_tensor = torch.tensor(y_val, dtype=torch.float32).to(device)
-
 
 # 定义BiGRU模型
 class BiGRU(nn.Module):
@@ -63,7 +59,6 @@ class BiGRU(nn.Module):
         out = self.fc2(out)
         return out
 
-
 input_size = X_train_tensor.shape[2]
 hidden_size = 64
 num_layers = 2
@@ -79,8 +74,6 @@ batch_size = 256
 train_losses = []
 val_losses = []
 val_mses = []
-val_maes = []
-val_r2s = []
 
 # 创建数据加载器
 train_loader = torch.utils.data.DataLoader(torch.utils.data.TensorDataset(X_train_tensor, y_train_tensor),
@@ -123,16 +116,11 @@ for epoch in range(num_epochs):
     val_targets_rescaled = scaler_output.inverse_transform(val_targets)
 
     mse = mean_squared_error(val_targets_rescaled, val_preds_rescaled)
-    mae = mean_absolute_error(val_targets_rescaled, val_preds_rescaled)
-    r2 = r2_score(val_targets_rescaled, val_preds_rescaled)
-
     val_mses.append(mse)
-    val_maes.append(mae)
-    val_r2s.append(r2)
 
     if (epoch + 1) % 10 == 0:
         print(f'Epoch [{epoch + 1}/{num_epochs}], Train Loss: {epoch_loss:.4f}, Validation Loss: {epoch_val_loss:.4f}')
-        print(f'Validation MSE: {mse:.4f}, MAE: {mae:.4f}, R²: {r2:.4f}')
+        print(f'Validation MSE: {mse:.4f}')
 
 # 绘制训练和验证损失曲线
 plt.figure(figsize=(12, 4))
@@ -144,14 +132,13 @@ plt.title('Training and Validation Loss')
 plt.xlabel('Epoch')
 plt.ylabel('Loss')
 
+# 绘制验证MSE曲线
 plt.subplot(1, 2, 2)
 plt.plot(val_mses, label='Validation MSE')
-plt.plot(val_maes, label='Validation MAE')
-plt.plot(val_r2s, label='Validation R²')
 plt.legend()
-plt.title('Validation Metrics')
+plt.title('Validation MSE')
 plt.xlabel('Epoch')
-plt.ylabel('Metric')
+plt.ylabel('MSE')
 
 plt.show()
 
@@ -159,8 +146,6 @@ plt.show()
 best_epoch = np.argmin(val_losses)
 print(f'Best Epoch: {best_epoch + 1}')
 print(f'Best Validation MSE: {val_mses[best_epoch]:.4f}')
-print(f'Best Validation MAE: {val_maes[best_epoch]:.4f}')
-print(f'Best Validation R²: {val_r2s[best_epoch]:.4f}')
 
 # 预测test数据
 test_data1 = pd.read_csv('../DATA_PROCESS/processed_test_data.csv', encoding='gbk')

@@ -39,16 +39,16 @@ if __name__ == '__main__':
     ax.set_xticklabels(vertical_labels(ax.get_xticklabels()))
     plt.show()
 
-    # 删除异常值
-    Q1 = data.quantile(0.25)
-    Q3 = data.quantile(0.75)
-    IQR = Q3 - Q1
-    data_cleaned = data[~((data < (Q1 - 1.5 * IQR)) | (data > (Q3 + 1.5 * IQR))).any(axis=1)]
+    # # 删除异常值
+    # Q1 = data.quantile(0.25)
+    # Q3 = data.quantile(0.75)
+    # IQR = Q3 - Q1
+    # data_cleaned = data[~((data < (Q1 - 1.5 * IQR)) | (data > (Q3 + 1.5 * IQR))).any(axis=1)]
 
     # 提取所有列，忽略“洪水概率”
-    X = data_cleaned.drop(columns=['id'])
+    X = data.drop(columns=['id'])
     # 提取id列
-    ids = data_cleaned['id']
+    ids = data['id']
 
     # 归一化特征列
     scaler = MinMaxScaler()
