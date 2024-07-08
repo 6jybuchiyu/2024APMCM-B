@@ -17,8 +17,8 @@ def vertical_labels(labels):
 
 if __name__ == '__main__':
     # 设置中文字体
-    plt.rcParams['font.sans-serif'] = ['SimHei']  # 使用黑体
-    plt.rcParams['axes.unicode_minus'] = False  # 解决负号显示问题
+    plt.rcParams['font.sans-serif'] = ['SimSun']
+    plt.rcParams['axes.unicode_minus'] = False
 
     data = pd.read_csv('../test.csv', encoding='GBK')
     # 打印每个变量的中位数

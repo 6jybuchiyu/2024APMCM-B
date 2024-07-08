@@ -5,7 +5,7 @@ import seaborn as sns
 from matplotlib.font_manager import FontProperties
 
 # 加载宋体字体
-font = FontProperties(fname='C:\Windows\Fonts\simsun.ttc')  # 请替换为你的宋体字体文件的路径
+font = FontProperties(fname='C:\Windows\Fonts\simsun.ttc')
 
 # 加载数据
 data = pd.read_csv('../processed_train_data.csv', encoding='GBK')
